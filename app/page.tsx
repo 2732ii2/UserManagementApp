@@ -9,11 +9,20 @@ export default function Home() {
   const [data,setData]=useState<Object []>([]);
   const [err,setErr]=useState<String>("");
   const [loading,setLoading]=useState<boolean>(true);
-  const fetchData=async()=>{
+  const [searchedValue,setSearchedValue]=useState<String>("");
+  const fetchData=async(val:String)=>{
     try{
      const resp=await fetch('https://jsonplaceholder.typicode.com/users');
      const data=await resp.json();
-     setData(data);
+     const FilteredData= data.filter((e:any)=>{
+      console.log(e?.name.includes(val));
+      if(e.name.includes(val)){
+          return e
+      }
+     })
+     console.log(FilteredData);
+     setData(FilteredData);
+    //  setData(data);
      setLoading(false);
      console.log(data);
     }
@@ -23,25 +32,38 @@ export default function Home() {
      setErr(e?.message);
     }
    }
+
   useEffect(()=>{
-    fetchData();
-  },[])
+    if(searchedValue){
+    fetchData(searchedValue)
+    ;}
+    else
+    fetchData("");
+
+  },[searchedValue])
+  const ChangeHandler=(e:any)=>{
+    console.log(e.target.value);    setTimeout(()=>{
+      console.log("called",e.target.value);
+      setSearchedValue(e.target.value);
+    },2000)
+  }
   return (
     <div className="flex flex-col w-[100%]   h-[100vh] bg-[black]">
-      <Header/>       
+      <Header onChange={ChangeHandler}/>       
      {loading?<div className={` w-[80%] mt-[20px] mx-auto h-[auto]  flex items-center justify-center overflow-hidden rounded-[20px]`}>...loading</div>: <TableComp data={data}/>}
     </div>
   );
 }
 
-const Header=()=>{
+const Header=(props:any)=>{
+ const onChange= props?.onChange;
   return <div className={`Header flex justify-between text-white  px-[40px] py-[20px]  mt-[20px] `}>
     <h1 className={` font-medium serial text-3xl `}> User Management</h1>
 
     <div className={` flex justify-between w-[40%]  `}>
     <div className={` flex items-center  gap-[20px]  px-[20px] py-[5px] rounded-[20px]  `}>
-      <input className={` w-[250px] outline-none py-[5px] px-[5px] bg-transparent border-b-[1px] border-[white] `} />
-      <button className={` bg-[white] text-black px-[10px] py-[2px] rounded-[10px]`}>Search </button>
+      <input onChange={onChange} className={` w-[250px] outline-none py-[5px] px-[5px] bg-transparent border-b-[1px] border-[white] `} placeholder={"... type a Name"} />
+      {/* <button className={` bg-[white] text-black px-[10px] py-[2px] rounded-[10px]`}>Search </button> */}
     </div>
     <div className={` flex items-center w-[auto] border-[1px] border-white px-[20px] rounded-[20px] py-[10px] text-[16px] flex gap-[20px] `}>
     <p>+</p> Active User 
