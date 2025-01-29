@@ -16,15 +16,23 @@ export default function Home() {
   const [searchedValue,setSearchedValue]=useState<String>("");
   const fetchData=async(val:String)=>{
     try{
-     const resp=await fetch('https://jsonplaceholder.typicode.com/users');
-     const data=await resp.json();
-     const FilteredData = data.filter((e:any)=>{
-      console.log(e?.name.includes(val));
+      var  jsonRes;
+      if( !searchedValue ){
+        // This logic when you have an array then we don't need to hit api again  , 
+        // As well as we actually able to save our recently added user into a list
+        const resp=await fetch('https://jsonplaceholder.typicode.com/users');
+        jsonRes =await resp.json();
+      }
+      else{
+        jsonRes=data;
+      }
+     const FilteredData = jsonRes.filter((e:any)=>{
+      // console.log(e?.name.includes(val));
       if(e.name.includes(val)){
           return e
       }
      })
-     console.log(FilteredData);
+    //  console.log(FilteredData);
      setData(FilteredData.splice(0,8));
      setLoading(false);
      console.log(data.splice(0,8));
@@ -54,8 +62,52 @@ export default function Home() {
     firstName:"",
     lastName:"",
     email:"",
-    department:""
+    department:"",
+
   })
+  console.log(FormData);
+  const AddUser=async(objData:any)=>{
+   try{
+    const resp=await fetch('https://jsonplaceholder.typicode.com/posts', {
+      method: 'POST',
+      body: JSON.stringify({
+        name:objData.firstName+objData.lastName,
+        email:objData.email,
+        company:{name:objData.department}
+      }),
+      headers: {
+        'Content-type': 'application/json; charset=UTF-8',
+      },
+    });
+   const newUser=(await resp.json());
+   setData([newUser,...data].splice(0,8));
+    
+   }
+   catch(e:any){
+    console.log(e?.message);
+   }
+   setShowDialogBox({
+    Add:false,
+    Edit:false,
+   })
+  }
+  const [editData,setEditData]=useState<any>({});
+  useEffect(() => {
+    if(showDialogBox.Add)
+      setFormData({
+        firstName:   "",
+        lastName:  "",
+        email:   "",
+        department:   "",
+      });
+      else
+    setFormData({
+      firstName: editData?.name?.split(" ")[0] || "",
+      lastName: editData?.name?.split(" ")[1] || "",
+      email: editData?.email || "",
+      department: editData?.company?.name || "",
+    });
+  }, [editData,showDialogBox]);
   return (
     <div className="flex flex-col w-[100%] relative  h-[100vh] bg-[black]">
       <Header onChange={ChangeHandler} ClickHandler={()=>{
@@ -64,7 +116,9 @@ export default function Home() {
           Edit:false,
         })
       }} />       
-      {loading?<div className={` w-[80%] mt-[20px] mx-auto h-[auto]  flex items-center justify-center overflow-hidden rounded-[20px]`}>...loading</div>: <TableComp data={data} onClick={()=>{
+      {loading?<div className={` w-[80%] mt-[20px] mx-auto h-[auto]  flex items-center justify-center overflow-hidden rounded-[20px]`}>...loading</div>: <TableComp data={data} onClick={(data:any)=>{
+        console.log(data);
+        setEditData(data);
         setShowDialogBox({
           Add:false,
           Edit:true,
@@ -74,23 +128,29 @@ export default function Home() {
    {  showDialogBox?.Add || showDialogBox?.Edit  ? 
     <div className={` absolute w-[100%] h-[100vh] bg-[transparent] backdrop-blur-sm  flex items-center justify-center gap-[20px]  `}>
          
-         <form className={` w-[40%] h-[auto] bg-[white] relative rounded-[20px] flex flex-col p-[20px] items-center gap-[20px]`}>
+         <form onSubmit={e=>{
+            e?.preventDefault();
+            console.log(FormData);
+            AddUser(FormData);
+          }}  className={` w-[40%] h-[auto] bg-[white] relative rounded-[20px] flex flex-col p-[20px] items-center gap-[20px]`}>
           <h1 className={` text-black text-[20px] font-bold text-center `}>  { showDialogBox?.Add ? "Add New User" : " Edit User"}  </h1>
            <div className={` flex flex-wrap w-[100%] justify-center h-auto `}>
 
            {
             Object.keys(FormData).map((e,i)=>{
               return <div key={i} className={`text-black gap-2 flex mr-5 flex-col w-[40%] mt-[20px] capitalize tracking-wide font-medium`}>{e}
-              <input required={true} type={e=="email"?"email":"text"} className={` border-[2px] border-black h-[40px]  px-[20px] `}/>
+              <input value={  FormData[e] } onChange={(ele)=>{
+                    setFormData({
+                      ...FormData,[e]:ele.target.value
+                    })
+              }} required={true} type={e=="email"?"email":"text"} className={` border-[2px] border-black h-[40px]  px-[20px] `}/>
               </div>
             })
            }
            </div>
           
           <div>
-          { showDialogBox?.Add ?  <button onSubmit={e=>{
-            console.log("");
-          }} className={`bg-black text-white py-2 px-3 rounded-[10px] mt-[40px]`}>Submit</button>  :  <button className={`bg-black text-white py-2 px-3 rounded-[10px] mt-[40px]`} >Update</button>}
+          { showDialogBox?.Add ?  <button type="submit" className={`bg-black text-white py-2 px-3 rounded-[10px] mt-[40px]`}>Submit</button>  :  <button type={"submit"}  className={`bg-black text-white py-2 px-3 rounded-[10px] mt-[40px]`} >Update</button>}
 
           </div>
             
@@ -154,15 +214,17 @@ const TableComp=(props:any)=>{
          {
           data?.map((e:any,i:any)=>{
    const obj:any={id:e.id,name:e?.name,Email:e?.email,department:e?.company?.name,Action:["Edit","Delete"]};
-          console.log(e);
+          // console.log(e);
            return <div className={`w-[100%] flex  min-h-[60px] border-b-[1px] border-white `} key={i}>
             
             {
              Object.keys(obj).map((element:any,ind)=>{
-                console.log(obj[`${element}`]);
+                // console.log(obj[`${element}`]);
                 if(element=="Action")
                   return <div  className={`min-w-[20%]   flex items-center gap-[10px] justify-center `} key={ind}>
-                    <button onClick={props?.onClick} className={` px-[20px] py-[5px] bg-white text-black rounded-[5px]`}>Edit</button>
+                    <button onClick={()=>{
+                      props?.onClick(e)
+                    }} className={` px-[20px] py-[5px] bg-white text-black rounded-[5px]`}>Edit</button>
                     <button className={` px-[20px] py-[5px] bg-white text-black rounded-[5px]`}>Delete</button>
 
                   </div>
