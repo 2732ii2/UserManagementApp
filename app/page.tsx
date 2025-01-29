@@ -9,22 +9,25 @@ export default function Home() {
   const [data,setData]=useState<Object []>([]);
   const [err,setErr]=useState<String>("");
   const [loading,setLoading]=useState<boolean>(true);
+  const [showDialogBox,setShowDialogBox]=useState({
+    Add:false,
+    Edit:false,
+  })
   const [searchedValue,setSearchedValue]=useState<String>("");
   const fetchData=async(val:String)=>{
     try{
      const resp=await fetch('https://jsonplaceholder.typicode.com/users');
      const data=await resp.json();
-     const FilteredData= data.filter((e:any)=>{
+     const FilteredData = data.filter((e:any)=>{
       console.log(e?.name.includes(val));
       if(e.name.includes(val)){
           return e
       }
      })
      console.log(FilteredData);
-     setData(FilteredData);
-    //  setData(data);
+     setData(FilteredData.splice(0,8));
      setLoading(false);
-     console.log(data);
+     console.log(data.splice(0,8));
     }
     catch(e:any){
       setLoading(false);
@@ -47,16 +50,72 @@ export default function Home() {
       setSearchedValue(e.target.value);
     },2000)
   }
+  const [FormData,setFormData]=useState({
+    firstName:"",
+    lastName:"",
+    email:"",
+    department:""
+  })
   return (
-    <div className="flex flex-col w-[100%]   h-[100vh] bg-[black]">
-      <Header onChange={ChangeHandler}/>       
-     {loading?<div className={` w-[80%] mt-[20px] mx-auto h-[auto]  flex items-center justify-center overflow-hidden rounded-[20px]`}>...loading</div>: <TableComp data={data}/>}
+    <div className="flex flex-col w-[100%] relative  h-[100vh] bg-[black]">
+      <Header onChange={ChangeHandler} ClickHandler={()=>{
+        setShowDialogBox({
+          Add:true,
+          Edit:false,
+        })
+      }} />       
+      {loading?<div className={` w-[80%] mt-[20px] mx-auto h-[auto]  flex items-center justify-center overflow-hidden rounded-[20px]`}>...loading</div>: <TableComp data={data} onClick={()=>{
+        setShowDialogBox({
+          Add:false,
+          Edit:true,
+        })
+      }}/>}
+
+   {  showDialogBox?.Add || showDialogBox?.Edit  ? 
+    <div className={` absolute w-[100%] h-[100vh] bg-[transparent] backdrop-blur-sm  flex items-center justify-center gap-[20px]  `}>
+         
+         <form className={` w-[40%] h-[auto] bg-[white] relative rounded-[20px] flex flex-col p-[20px] items-center gap-[20px]`}>
+          <h1 className={` text-black text-[20px] font-bold text-center `}>  { showDialogBox?.Add ? "Add New User" : " Edit User"}  </h1>
+           <div className={` flex flex-wrap w-[100%] justify-center h-auto `}>
+
+           {
+            Object.keys(FormData).map((e,i)=>{
+              return <div key={i} className={`text-black gap-2 flex mr-5 flex-col w-[40%] mt-[20px] capitalize tracking-wide font-medium`}>{e}
+              <input required={true} type={e=="email"?"email":"text"} className={` border-[2px] border-black h-[40px]  px-[20px] `}/>
+              </div>
+            })
+           }
+           </div>
+          
+          <div>
+          { showDialogBox?.Add ?  <button onSubmit={e=>{
+            console.log("");
+          }} className={`bg-black text-white py-2 px-3 rounded-[10px] mt-[40px]`}>Submit</button>  :  <button className={`bg-black text-white py-2 px-3 rounded-[10px] mt-[40px]`} >Update</button>}
+
+          </div>
+            
+            <p className={` absolute cursor-pointer font-bold text-[16px] right-[30px] text-black`} onClick={()=>{
+               setShowDialogBox({
+                Add:false,
+                Edit:false,
+              })
+            }}>X</p>
+
+
+          </form>
+          
+    </div>  : null
+      
+    }
+
+
     </div>
   );
 }
 
 const Header=(props:any)=>{
  const onChange= props?.onChange;
+ const ClickHandler=props?.ClickHandler;
   return <div className={`Header flex justify-between text-white  px-[40px] py-[20px]  mt-[20px] `}>
     <h1 className={` font-medium serial text-3xl `}> User Management</h1>
 
@@ -65,7 +124,7 @@ const Header=(props:any)=>{
       <input onChange={onChange} className={` w-[250px] outline-none py-[5px] px-[5px] bg-transparent border-b-[1px] border-[white] `} placeholder={"... type a Name"} />
       {/* <button className={` bg-[white] text-black px-[10px] py-[2px] rounded-[10px]`}>Search </button> */}
     </div>
-    <div className={` flex items-center w-[auto] border-[1px] border-white px-[20px] rounded-[20px] py-[10px] text-[16px] flex gap-[20px] `}>
+    <div onClick={ClickHandler} className={` flex items-center w-[auto] border-[1px] border-white px-[20px] rounded-[20px] py-[10px] text-[16px] flex gap-[20px] `}>
     <p>+</p> Active User 
      
     </div>
@@ -103,7 +162,7 @@ const TableComp=(props:any)=>{
                 console.log(obj[`${element}`]);
                 if(element=="Action")
                   return <div  className={`min-w-[20%]   flex items-center gap-[10px] justify-center `} key={ind}>
-                    <button className={` px-[20px] py-[5px] bg-white text-black rounded-[5px]`}>Edit</button>
+                    <button onClick={props?.onClick} className={` px-[20px] py-[5px] bg-white text-black rounded-[5px]`}>Edit</button>
                     <button className={` px-[20px] py-[5px] bg-white text-black rounded-[5px]`}>Delete</button>
 
                   </div>
