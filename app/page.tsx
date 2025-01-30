@@ -28,7 +28,7 @@ export default function Home() {
       }
      })
     console.log("---",FilteredData,FilteredData.slice(page*8,(page+1)*8),page);
-     setData(FilteredData.slice(page*8,(page+1)*8));
+     setData(FilteredData);
      setLoading(false);
     }
     catch(e:any){
@@ -67,7 +67,7 @@ export default function Home() {
   }
   const nextPageHandler=()=>{
     console.log("nextpage handler",(data.length/8));
-    if(page< Math.floor((data.length)/8))
+    if(page< Math.floor((data.length)/7))
     setPage(page+1);
   }
   const AddAndUpdateUser=async(objData:any)=>{
@@ -84,7 +84,7 @@ export default function Home() {
       },
     });
    const newUser=(await resp.json());
-   setData([newUser,...data].slice(page*8,(page+1)*8));
+   setData([newUser,...data]);
     
    }
    catch(e:any){
@@ -108,7 +108,7 @@ export default function Home() {
     const index:number[]= data.map((e:any,i:any)=>{if(e.id==id) return i;  }).filter((e:any)=>{if(e)return e});
     console.log("index");
     data.splice(index[0],1);
-    setData([...data].slice(page*8,(page+1)*8));
+    setData([...data]);
     }
     catch(e:any){
      console.log(e?.message);
@@ -145,11 +145,16 @@ export default function Home() {
           Delete:false
         })
       }} />       
-      {loading?<div className={` w-[80%] mt-[20px] mx-auto h-[auto]  flex items-center justify-center overflow-hidden rounded-[20px]`}>...loading</div>: <TableComp prevPageHandler={()=>{
+      {/* .slice(page*8,(page+1)*8) */}
+      {loading?
+      <div className={` w-[80%] mt-[20px] mx-auto h-[auto]  flex items-center justify-center overflow-hidden rounded-[20px]`}>...loading</div>
+      : 
+      err?<div className={` bg-[red] w-[80%] mx-auto  mt-5 px-3 text-white`}>{err}{" : Check your internet connection"}</div>:
+      <TableComp prevPageHandler={()=>{
         prevPageHandler()
       }} nextPageHandler={()=>{
         nextPageHandler()
-      }} page={page} data={data} onClick={(data:any,name:string)=>{
+      }} page={page} data={data.slice(page*8,(page+1)*8)} onClick={(data:any,name:string)=>{
         console.log(data,name);
         setEditData(data);
         if(name=="delete")
