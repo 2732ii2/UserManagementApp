@@ -137,7 +137,7 @@ export default function Home() {
     });
   }, [editData,showDialogBox]);
   return (
-    <div className="flex flex-col w-[100%] relative  h-[100vh] bg-[black]">
+    <div className="flex flex-col w-[100%] overflow-hidden relative  h-[100vh] bg-[black]">
       <Header onChange={ChangeHandler} ClickHandler={()=>{
         setShowDialogBox({
           Add:true,
