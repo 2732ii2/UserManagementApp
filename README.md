@@ -23,6 +23,7 @@
 <li> - Pagination in Table </li>
 <li> - Search Filter by name </li>
 <li> - Have tried to decrease complexity of the code by dividing code into different Components. </li>
+<li> - Client-side validation for the user input form. </li>
 
 # ScreenShot 
 <img width="1431" alt="Screenshot 2025-01-31 at 10 27 29 AM" src="https://github.com/user-attachments/assets/22b3df37-2983-412c-a325-9e4eb990f940" />
