@@ -14,6 +14,7 @@
 <h4>Step 3 : Open terminal : write a command </h1>
 <Strong> npm i </Strong>
 
+<h5> Project Deployed :   <a href="https://user-management-app-rosy.vercel.app/" target="_blank" >  Link  </h4> </h5>
 
 <h5>. Some Points which have taken care of. </h5>
 
