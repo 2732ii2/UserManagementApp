@@ -17,7 +17,7 @@ const TableComp=(props:any)=>{
            // console.log(e);
            if(i!=0)
             return  <div  key={i}>
-             <div className={`w-[100%] rounded-[20px] sm:flex hidden  min-h-[70px] border-b-[1px] border-white `} key={i}>
+             <div className={`w-[100%] rounded-[20px] sm:flex hidden  min-h-[45px] border-b-[1px] border-white `} key={i}>
              
              {
               Object.keys(obj).map((element:any,ind)=>{
@@ -25,10 +25,10 @@ const TableComp=(props:any)=>{
                    return <div  className={`min-w-[20%]   text-white  flex items-center gap-[10px] justify-center `} key={ind}>
                      <button onClick={()=>{
                        props?.onClick(e,"edit")
-                     }} className={` px-[20px] py-[5px] bg-white text-black rounded-[5px]`}>Edit</button>
+                     }} className={` px-[10px] py-[2px] bg-white text-black rounded-[5px]`}>Edit</button>
                      <button onClick={()=>{
                        props?.onClick(e,"delete")
-                     }} className={` px-[20px] py-[5px] bg-white text-black rounded-[5px]`}>Delete</button>
+                     }} className={` px-[10px] py-[2px] bg-white text-black rounded-[5px]`}>Delete</button>
  
                    </div>
                  return <div  className={`min-w-[20%] text-white   flex items-center justify-center `} key={ind}>{obj[`${element}`]}</div>
@@ -62,7 +62,7 @@ const TableComp=(props:any)=>{
             </div>
             else{
                // console.log("--",Object.keys(e));
-               return <div className={`w-[100%] rounded-[10px] backdrop-blue-lg bg-[rgba(255,255,255,.8)] text-black sm:flex hidden  min-h-[60px] border-b-[1px] border-white `} key={i}>{
+               return <div className={`w-[100%] rounded-[10px] backdrop-blue-lg bg-[rgba(255,255,255,.8)] text-black sm:flex hidden  min-h-[40px] border-b-[1px] border-white `} key={i}>{
                Object.keys(e).map((element,ind)=>{
                  return <div  className={`min-w-[20%]     flex items-center justify-center `} key={ind}>{element}</div>
                })
@@ -72,7 +72,7 @@ const TableComp=(props:any)=>{
           }
           </div>
  
-          <div className={` absolute w-[100%] min-h-[60px] gap-[20px] flex justify-end items-center pt-5  sm:top-[95%] -top-[40px]   text-white  sm:!text-[20px] !text-[14px]  `}>                                                                                                                
+          <div className={` absolute w-[100%] min-h-[40px] gap-[20px] flex justify-end items-center pt-5  sm:top-[95%] -top-[40px]   text-white  sm:!text-[20px] !text-[14px]  `}>                                                                                                                
              <KeyboardArrowLeftIcon  onClick={props?.prevPageHandler} className={`  sm:!text-[20px] !text-[14px] ${props.page>0 ?" !text-white ":"text-[rgba(255,255,255,.1)]" }`} /> {props?.page+1} <KeyboardArrowRightIcon className={`  sm:!text-[20px] !text-[14px] ${props.page< Math.floor((data.length)/9)?"":"text-[rgba(255,255,255,.1)]" }`} onClick={props?.nextPageHandler}/>
           </div>
     </div>
